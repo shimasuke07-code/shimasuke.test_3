@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Habitica風タスク管理</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #1e1e2f;
+      color: white;
+      display: flex;
+      min-height: 100vh;
+      transition: all 0.3s;
+    }
+
+    /* 左サイドバー */
+    .sidebar-left {
+      flex: 0 0 200px;
+      background-color: #2c2c4a;
+      padding: 20px;
+      box-sizing: border-box;
+      transition: transform 0.3s;
+    }
+
+    /* 中央メイン */
+    .main {
+      flex: 1;
+      padding: 20px;
+      box-sizing: border-box;
+      min-width: 300px;
+    }
+
+    /* 右サイドバー */
+    .sidebar-right {
+      flex: 0 0 200px;
+      background-color: #2c2c4a;
+      padding: 20px;
+      box-sizing: border-box;
+      transition: transform 0.3s;
+    }
+
+    /* キャラクター画像 */
+    .avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 2px solid white;
+      display: block;
+      margin: 0 auto 10px auto;
+      transition: all 0.3s;
+    }
+
+    /* タスク */
+    .task {
+      background-color: #44446a;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .task.done {
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
+
+    /* 折りたたみボタン */
+    .toggle-btn {
+      display: none;
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 1000;
+      background-color: #44446a;
+      color: white;
+      border: none;
+      padding: 10px;
+      font-size: 18px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    /* レスポンシブ */
+    @media screen and (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+
+      .toggle-btn {
+        display: block;
+      }
+
+      .sidebar-left, .sidebar-right {
+        width: 100%;
+        display: none;
+        transform: translateY(-100%);
+      }
+
+      .sidebar-left.active, .sidebar-right.active {
+        display: block;
+        transform: translateY(0);
+      }
+
+      .main {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 折りたたみボタン -->
+  <button class="toggle-btn" onclick="toggleSidebar()">☰ メニュー</button>
+
+  <!-- 左サイドバー -->
+  <div class="sidebar-left">
+    <h2>キャラクター</h2>
+    <img src="avatar.png" alt="キャラクター" class="avatar" id="avatar">
+    <p>名前: たろう</p>
+    <p>レベル: <span id="level">1</span></p>
+    <p>HP: 100</p>
+    <p>経験値: <span id="exp">0/50</span></p>
+  </div>
+
+  <!-- 中央メイン -->
+  <div class="main">
+    <h2>今日のタスク</h2>
+    <div id="taskList"></div>
+    <input type="text" id="taskInput" placeholder="新しいタスク">
+    <button onclick="addTask()">追加</button>
+  </div>
+
+  <!-- 右サイドバー -->
+  <div class="sidebar-right">
+    <h2>ポイント</h2>
+    <p id="points">0</p>
+  </div>
+
+  <script>
+    let tasks = [];
+    let points = 0;
+    let level = 1;
+    let exp = 0;
+
+    function addTask() {
+      const input = document.getElementById('taskInput');
+      if(input.value === "") return;
+      tasks.push({ text: input.value, done: false });
+      input.value = "";
+      renderTasks();
+    }
+
+    function toggleDone(index) {
+      const task = tasks[index];
+      task.done = !task.done;
+
+      if(task.done) {
+        points += 10;
+        exp += 10;
+      } else {
+        points -= 10;
+        exp -= 10;
+      }
+
+      // レベルアップ判定
+      while(exp >= 50) {
+        level++;
+        exp -= 50;
+        alert("レベルアップ！🎉 レベル: " + level);
+      }
+
+      updateSidebar();
+      renderTasks();
+      updateAvatarAppearance();
+    }
+
+    function renderTasks() {
+      const taskList = document.getElementById('taskList');
+      taskList.innerHTML = "";
+      tasks.forEach((task, i) => {
+        const div = document.createElement('div');
+        div.className = "task" + (task.done ? " done" : "");
+        div.innerText = task.text;
+        div.onclick = () => toggleDone(i);
+        taskList.appendChild(div);
+      });
+    }
+
+    function updateSidebar() {
+      document.getElementById('points').innerText = points;
+      document.getElementById('level').innerText = level;
+      document.getElementById('exp').innerText = exp + "/50";
+    }
+
+    function toggleSidebar() {
+      document.querySelector('.sidebar-left').classList.toggle('active');
+      document.querySelector('.sidebar-right').classList.toggle('active');
+    }
+
+    function updateAvatarAppearance() {
+      const avatar = document.getElementById('avatar');
+      if(level < 3) avatar.style.borderColor = "white";
+      else if(level < 5) avatar.style.borderColor = "gold";
+      else avatar.style.borderColor = "red"; // レベルで見た目変化
+    }
+
+  </script>
+</body>
+</html>
