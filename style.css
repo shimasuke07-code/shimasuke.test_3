@@ -1,0 +1,30 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #1e1e2f;
+  color: white;
+  display: flex;
+  min-height: 100vh;
+  transition: all 0.3s;
+}
+
+/* 左サイドバー */
+.sidebar-left { ... }
+
+/* 中央メイン */
+.main { ... }
+
+/* 右サイドバー */
+.sidebar-right { ... }
+
+/* キャラクター画像 */
+.avatar { ... }
+
+/* タスク */
+.task { ... }
+
+/* 折りたたみボタン */
+.toggle-btn { ... }
+
+/* レスポンシブ */
+@media screen and (max-width: 768px) { ... }
